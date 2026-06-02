@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中赣通 后台管理系统 - 登录</title>
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-box">
+    <div class="lg-logo">
+      <svg viewBox="0 0 40 40" fill="none">
+        <rect x="4" y="10" width="20" height="9" rx="2" fill="#2f7be0"/>
+        <rect x="14" y="21" width="20" height="9" rx="2" fill="#9cc7f2"/>
+      </svg>
+    </div>
+    <h2 id="lgTitle">中赣通后台管理系统</h2>
+    <form id="loginForm">
+      <div class="form-item">
+        <label>账号</label>
+        <input class="input" id="username" placeholder="请输入账号" autocomplete="username" value="admin">
+      </div>
+      <div class="form-item">
+        <label>密码</label>
+        <input class="input" id="password" type="password" placeholder="请输入密码" autocomplete="current-password" value="admin123">
+      </div>
+      <button class="btn btn--primary btn--login" type="submit">登 录</button>
+    </form>
+    <div class="login-tip">默认账号 admin / admin123</div>
+  </div>
+</div>
+
+<script src="/admin/js/admin-common.js"></script>
+<script>
+  if (Admin.token()) location.href = '/admin/index.html';
+  Admin.siteName().then(function (name) {
+    document.getElementById('lgTitle').textContent = name + '后台管理系统';
+    document.title = name + ' 后台管理系统 - 登录';
+  });
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = document.getElementById('username').value.trim();
+    var p = document.getElementById('password').value;
+    if (!u || !p) { Admin.toast('请输入账号和密码', 'warning'); return; }
+    var btn = this.querySelector('button'); btn.disabled = true; btn.textContent = '登录中…';
+    Admin.request('/api/auth/login', { method: 'POST', body: { username: u, password: p } })
+      .then(function (data) {
+        Admin.setAuth(data.token, data.user);
+        Admin.toast('登录成功', 'success');
+        location.href = '/admin/index.html';
+      })
+      .catch(function (err) {
+        Admin.toast(err.message || '登录失败', 'error');
+        btn.disabled = false; btn.textContent = '登 录';
+      });
+  });
+</script>
+</body>
+</html>

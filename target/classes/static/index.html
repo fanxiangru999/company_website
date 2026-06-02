@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中赣通 - 系统开发团队 | 您身边的 IT 专家</title>
+  <link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<header class="header" id="header">
+  <div class="container">
+    <a class="logo" href="/">
+      <svg class="mark" viewBox="0 0 40 40" fill="none">
+        <rect x="4" y="10" width="20" height="9" rx="2" fill="#2f7be0"/>
+        <rect x="14" y="21" width="20" height="9" rx="2" fill="#9cc7f2"/>
+      </svg>
+      <span id="logoText">中赣通</span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#hero" class="active">首页</a>
+      <a href="#cases">产品与案例</a>
+      <a href="#expert">服务与支持</a>
+      <a href="#news">新闻资讯</a>
+      <a href="#info">关于我们</a>
+      <a href="#footer">联系我们</a>
+    </nav>
+    <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<!-- 轮播 Banner -->
+<section class="hero" id="hero">
+  <div class="hero__slides" id="heroSlides"></div>
+  <div class="hero__dots" id="heroDots"></div>
+</section>
+
+<!-- 核心优势 -->
+<section class="section" id="advantages">
+  <div class="container">
+    <div class="section-head">
+      <h3 id="advTitle">核心优势</h3>
+      <p id="advSubtitle"></p>
+    </div>
+    <div class="advantages" id="advantageList"></div>
+  </div>
+</section>
+
+<!-- 信息系统 -->
+<section class="section section--light" id="info">
+  <div class="container">
+    <div class="info">
+      <div class="info__img"><img id="infoImage" src="/images/info.svg" alt="信息系统"></div>
+      <div class="info__body">
+        <h2 class="block-title" id="infoTitle">信息系统</h2>
+        <div id="infoContent"></div>
+        <a class="btn-primary" id="infoBtn" href="#footer">联系我们</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 成功案例 -->
+<section class="section" id="cases">
+  <div class="container">
+    <div class="cases-head">
+      <h2 class="block-title" id="caseTitle">成功案例</h2>
+      <div class="cases-arrows">
+        <button id="casePrev" aria-label="上一组">&#8592;</button>
+        <button id="caseNext" aria-label="下一组">&#8594;</button>
+      </div>
+    </div>
+    <div class="cases-track-wrap">
+      <div class="cases" id="caseList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 您身边的 IT 专家 -->
+<section class="section section--light" id="expert">
+  <div class="container">
+    <div class="expert">
+      <div class="expert__left">
+        <div class="expert__caption" id="expertCaption">7x24小时提供出色的 IT 服务</div>
+        <h3 id="expertTitle">您身边的 IT 专家</h3>
+        <div id="expertContent"></div>
+        <a class="btn-primary" id="expertBtn" href="#footer">联系我们</a>
+      </div>
+      <div class="expert__right" id="serviceList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 新闻资讯 -->
+<section class="section" id="news">
+  <div class="container">
+    <div class="section-head"><h3 id="newsTitle">新闻资讯</h3></div>
+    <div class="news-grid" id="newsList"></div>
+    <div class="section-more"><a class="btn-primary" href="/news.html">查看更多新闻</a></div>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="footer" id="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="logo">
+          <svg class="mark" viewBox="0 0 40 40" fill="none">
+            <rect x="4" y="10" width="20" height="9" rx="2" fill="#2f7be0"/>
+            <rect x="14" y="21" width="20" height="9" rx="2" fill="#9cc7f2"/>
+          </svg>
+          <span id="footerCompany">贵州中赣通信息科技有限公司</span>
+        </div>
+        <div class="contact-line">电话：<span id="footerPhone"></span></div>
+        <div class="contact-line">传真：<span id="footerFax"></span></div>
+        <div class="contact-line">微信：<span id="footerWechat"></span></div>
+        <div class="contact-line">邮箱：<span id="footerEmail"></span></div>
+        <div class="contact-line">地址：<span id="footerAddress"></span></div>
+      </div>
+      <div class="footer__cols">
+        <div class="footer-col">
+          <h5>产品与案例</h5>
+          <a href="#cases">Tessai 营管云会系统</a>
+          <a href="#cases">Tessai 客户端系统</a>
+        </div>
+        <div class="footer-col">
+          <h5>服务与支持</h5>
+          <a href="#expert">Watch a Demo</a>
+          <a href="#expert">Status</a>
+          <a href="#expert">Integrations</a>
+          <a href="#expert">Android Apps</a>
+        </div>
+        <div class="footer-col">
+          <h5>关于我们</h5>
+          <a href="#info">公司介绍</a>
+          <a href="#info">公司资质</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="container">
+      Copyright © 2020 - <span id="footerIcp"></span> <span id="footerCopyright"></span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/portal.js"></script>
+</body>
+</html>

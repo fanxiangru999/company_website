@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice">
+  <defs><linearGradient id="s1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe1ff"/><stop offset="1" stop-color="#eaf6ff"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#s1)"/>
+  <circle cx="320" cy="62" r="30" fill="#ffd76a"/>
+  <rect x="0" y="168" width="400" height="92" fill="#2f7be0" fill-opacity="0.18"/>
+  <g fill="#1f5fb0" fill-opacity="0.55">
+    <rect x="40" y="96" width="38" height="80"/>
+    <rect x="86" y="70" width="44" height="106"/>
+    <rect x="140" y="110" width="34" height="66"/>
+    <rect x="250" y="84" width="42" height="92"/>
+    <rect x="300" y="104" width="36" height="72"/>
+  </g>
+  <rect x="0" y="176" width="400" height="10" fill="#38b2ac"/>
+  <g stroke="#0e3a66" stroke-width="4"><line x1="190" y1="176" x2="190" y2="120"/></g>
+  <circle cx="190" cy="116" r="9" fill="#ffd76a" stroke="#0e3a66" stroke-width="3"/>
+  <g fill="#bd8a52"><rect x="60" y="186" width="280" height="8"/><rect x="80" y="194" width="6" height="50"/><rect x="160" y="194" width="6" height="50"/><rect x="240" y="194" width="6" height="50"/><rect x="320" y="194" width="6" height="50"/></g>
+</svg>

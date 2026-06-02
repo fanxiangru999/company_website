@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: company-website
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/company_website?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+  web:
+    resources:
+      cache:
+        # 开发期关闭静态资源强缓存，避免浏览器使用旧的 js/css（改完刷新即生效）
+        cachecontrol:
+          no-cache: true
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    # 开发期打印 SQL，正式可注释掉
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+# 文件上传配置：上传目录在项目运行目录下的 uploads，通过 /uploads/** 对外访问
+file:
+  upload-dir: ./uploads
+  access-prefix: /uploads/
+
+# JWT 配置：secret 至少 32 字节（HS256 要求 256bit）
+jwt:
+  header: Authorization
+  prefix: "Bearer "
+  secret: zhongGanTongSecretKeyForJwtTokenGen2024PleaseChangeInProd
+  # 过期时间，单位毫秒，默认 1 天
+  expire: 86400000

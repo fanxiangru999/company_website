@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新闻资讯 - 中赣通</title>
+  <link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+
+<header class="header scrolled" id="header">
+  <div class="container">
+    <a class="logo" href="/">
+      <svg class="mark" viewBox="0 0 40 40" fill="none">
+        <rect x="4" y="10" width="20" height="9" rx="2" fill="#2f7be0"/>
+        <rect x="14" y="21" width="20" height="9" rx="2" fill="#9cc7f2"/>
+      </svg>
+      <span id="logoText">中赣通</span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="/">首页</a>
+      <a href="/#cases">产品与案例</a>
+      <a href="/#expert">服务与支持</a>
+      <a href="/news.html" class="active">新闻资讯</a>
+      <a href="/#info">关于我们</a>
+      <a href="/#footer">联系我们</a>
+    </nav>
+    <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<div class="subpage">
+  <div class="page-banner">
+    <div class="container">
+      <h2>新闻资讯</h2>
+      <div class="breadcrumb"><a href="/">首页</a> / 新闻资讯</div>
+    </div>
+  </div>
+
+  <div class="news-list">
+    <div class="container">
+      <div class="news-grid" id="newsList"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer" id="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="logo">
+          <svg class="mark" viewBox="0 0 40 40" fill="none">
+            <rect x="4" y="10" width="20" height="9" rx="2" fill="#2f7be0"/>
+            <rect x="14" y="21" width="20" height="9" rx="2" fill="#9cc7f2"/>
+          </svg>
+          <span id="footerCompany">贵州中赣通信息科技有限公司</span>
+        </div>
+        <div class="contact-line">电话：<span id="footerPhone"></span></div>
+        <div class="contact-line">邮箱：<span id="footerEmail"></span></div>
+        <div class="contact-line">地址：<span id="footerAddress"></span></div>
+      </div>
+      <div class="footer__cols">
+        <div class="footer-col"><h5>产品与案例</h5><a href="/#cases">Tessai 营管云会系统</a><a href="/#cases">Tessai 客户端系统</a></div>
+        <div class="footer-col"><h5>服务与支持</h5><a href="/#expert">Watch a Demo</a><a href="/#expert">Status</a></div>
+        <div class="footer-col"><h5>关于我们</h5><a href="/#info">公司介绍</a><a href="/#info">公司资质</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="container">Copyright © 2020 - <span id="footerIcp"></span> <span id="footerCopyright">贵州中赣通信息科技有限公司</span></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  function esc(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fmt(s){ if(!s) return ''; var m=String(s).substring(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m? m[1]+'年'+(+m[2])+'月'+(+m[3])+'日':s; }
+  function set(id,v){ var el=document.getElementById(id); if(el&&v!=null) el.textContent=v; }
+  var pageSize = 9, current = 1;
+
+  document.getElementById('navToggle').addEventListener('click', function(){ document.getElementById('nav').classList.toggle('open'); });
+
+  fetch('/api/portal/home').then(function(r){return r.json();}).then(function(res){
+    var c=(res.data&&res.data.config)||{};
+    set('logoText',c.site_name); set('footerCompany',c.company_full_name); set('footerCopyright',c.company_full_name);
+    set('footerPhone',c.footer_phone); set('footerEmail',c.footer_email); set('footerAddress',c.footer_address); set('footerIcp',c.icp);
+  }).catch(function(){});
+
+  function load(page){
+    fetch('/api/portal/news?pageNum='+page+'&pageSize='+pageSize).then(function(r){return r.json();}).then(function(res){
+      if(res.code!==200) return;
+      var d=res.data||{}, records=d.records||[], total=d.total||0;
+      current=page;
+      var box=document.getElementById('newsList');
+      box.innerHTML = records.length? records.map(function(n){
+        return '<a class="news-card" href="/news-detail.html?id='+n.id+'">'+
+          '<div class="news-card__img"><img src="'+esc(n.coverImage||'/images/news1.svg')+'" alt="'+esc(n.title)+'"></div>'+
+          '<div class="news-card__body"><h4>'+esc(n.title)+'</h4>'+
+          '<div class="news-card__meta">'+fmt(n.publishDate)+' · 浏览 '+(n.views||0)+'</div>'+
+          '<p>'+esc(n.summary)+'</p></div></a>';
+      }).join('') : '<p style="color:#aab2bd">暂无新闻</p>';
+      renderPager(total);
+    });
+  }
+  function renderPager(total){
+    var pages=Math.ceil(total/pageSize)||1, box=document.getElementById('pagination'), html='';
+    if(pages<=1){ box.innerHTML=''; return; }
+    html+='<button '+(current<=1?'disabled':'')+' data-p="'+(current-1)+'">上一页</button>';
+    for(var i=1;i<=pages;i++) html+='<button class="'+(i===current?'active':'')+'" data-p="'+i+'">'+i+'</button>';
+    html+='<button '+(current>=pages?'disabled':'')+' data-p="'+(current+1)+'">下一页</button>';
+    box.innerHTML=html;
+    box.querySelectorAll('button[data-p]').forEach(function(b){ b.addEventListener('click',function(){ var p=+this.dataset.p; if(p>=1&&p<=pages){ load(p); window.scrollTo({top:0,behavior:'smooth'}); } }); });
+  }
+  load(1);
+})();
+</script>
+</body>
+</html>

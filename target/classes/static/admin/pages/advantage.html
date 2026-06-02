@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>核心优势</title>
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+<div class="card">
+  <div class="toolbar">
+    <div class="left"><span class="page-title">核心优势管理</span></div>
+    <div class="right"><button class="btn btn--primary" id="addBtn">+ 新增优势</button></div>
+  </div>
+  <div class="table-wrap">
+    <table class="tb">
+      <thead><tr><th width="70">排序</th><th width="160">标题</th><th>描述</th><th width="90">图标</th><th width="90">高亮</th><th width="90">状态</th><th width="150">操作</th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="7" class="empty">加载中…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="/admin/js/admin-common.js"></script>
+<script>
+  Admin.guard();
+  var API = '/api/admin/advantage', listCache = [], editingId = null;
+  var ICONS = { scale: '规模经营', team: '专业团队', rd: '技术研发', standard: '体系规范' };
+
+  function load() {
+    Admin.get(API + '/list').then(function (list) { listCache = list; render(); })
+      .catch(function (e) { Admin.toast(e.message, 'error'); });
+  }
+  function render() {
+    var tb = document.getElementById('tbody');
+    if (!listCache.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">暂无数据</td></tr>'; return; }
+    tb.innerHTML = listCache.map(function (a) {
+      return '<tr><td>' + (a.sortOrder || 0) + '</td><td>' + Admin.esc(a.title) + '</td>' +
+        '<td style="color:#909399">' + Admin.esc(a.description || '') + '</td>' +
+        '<td><span class="tag tag--blue">' + Admin.esc(ICONS[a.icon] || a.icon || '-') + '</span></td>' +
+        '<td>' + (a.featured == 1 ? '<span class="tag tag--on">是</span>' : '<span class="tag tag--off">否</span>') + '</td>' +
+        '<td>' + (a.status == 0 ? '<span class="tag tag--off">隐藏</span>' : '<span class="tag tag--on">显示</span>') + '</td>' +
+        '<td><button class="btn--text primary" data-act="edit" data-id="' + a.id + '">编辑</button>' +
+        '<button class="btn--text danger" data-act="del" data-id="' + a.id + '">删除</button></td></tr>';
+    }).join('');
+  }
+
+  function iconOptions(v) {
+    return Object.keys(ICONS).map(function (k) {
+      return '<option value="' + k + '"' + (v === k ? ' selected' : '') + '>' + ICONS[k] + '（' + k + '）</option>';
+    }).join('');
+  }
+  function formBody(d) {
+    d = d || {};
+    return '' +
+      '<div class="form-item"><label><span class="req">*</span>标题</label><input class="input" id="f_title" value="' + Admin.esc(d.title || '') + '"></div>' +
+      '<div class="form-item"><label>描述</label><textarea class="textarea" id="f_desc">' + Admin.esc(d.description || '') + '</textarea></div>' +
+      '<div class="form-row"><div class="form-item"><label>图标</label><select class="select" id="f_icon">' + iconOptions(d.icon) + '</select></div>' +
+        '<div class="form-item"><label>是否高亮卡片</label><select class="select" id="f_featured"><option value="0"' + (d.featured != 1 ? ' selected' : '') + '>否</option><option value="1"' + (d.featured == 1 ? ' selected' : '') + '>是</option></select></div></div>' +
+      '<div class="form-row"><div class="form-item"><label>排序</label><input class="input" id="f_sort" type="number" value="' + (d.sortOrder != null ? d.sortOrder : 0) + '"></div>' +
+        '<div class="form-item"><label>状态</label><select class="select" id="f_status"><option value="1"' + (d.status != 0 ? ' selected' : '') + '>显示</option><option value="0"' + (d.status == 0 ? ' selected' : '') + '>隐藏</option></select></div></div>';
+  }
+  function openForm(d) {
+    editingId = d ? d.id : null;
+    Admin.modal({
+      title: editingId ? '编辑核心优势' : '新增核心优势',
+      body: formBody(d),
+      onConfirm: function (dialog) {
+        var title = dialog.querySelector('#f_title').value.trim();
+        if (!title) { Admin.toast('请输入标题', 'warning'); return false; }
+        var payload = {
+          title: title, description: dialog.querySelector('#f_desc').value.trim(),
+          icon: dialog.querySelector('#f_icon').value, featured: +dialog.querySelector('#f_featured').value,
+          sortOrder: +dialog.querySelector('#f_sort').value || 0, status: +dialog.querySelector('#f_status').value
+        };
+        if (editingId) payload.id = editingId;
+        var req = editingId ? Admin.put(API, payload) : Admin.post(API, payload);
+        return req.then(function () { Admin.toast('保存成功', 'success'); load(); return true; })
+          .catch(function (e) { Admin.toast(e.message || '保存失败', 'error'); return false; });
+      }
+    });
+  }
+
+  document.getElementById('addBtn').addEventListener('click', function () { openForm(null); });
+  document.getElementById('tbody').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]'); if (!btn) return;
+    var id = +btn.getAttribute('data-id'), row = listCache.filter(function (x) { return x.id === id; })[0];
+    if (btn.getAttribute('data-act') === 'edit') openForm(row);
+    else Admin.confirm('确定删除「' + (row ? row.title : '') + '」吗？').then(function (ok) {
+      if (!ok) return;
+      Admin.del(API + '/' + id).then(function () { Admin.toast('删除成功', 'success'); load(); }).catch(function (er) { Admin.toast(er.message, 'error'); });
+    });
+  });
+  load();
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>首页</title>
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+<div class="stat-grid" id="statGrid"></div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>各模块内容数量</h3>
+    <div class="chart-box" id="barChart"></div>
+  </div>
+  <div class="chart-card">
+    <h3>新闻浏览量占比 (Top5)</h3>
+    <div class="chart-box" id="pieChart"></div>
+  </div>
+  <div class="chart-card span-2">
+    <h3>近 6 个月内容发布趋势</h3>
+    <div class="chart-box" id="lineChart"></div>
+  </div>
+</div>
+
+<div class="welcome">
+  <h2 id="hi">你好，管理员 👋</h2>
+  <p>欢迎使用 <b id="siteName">中赣通</b>官网后台管理系统。在这里你可以管理首页轮播图、核心优势、成功案例、新闻资讯、IT 服务以及网站的文字与联系方式。</p>
+  <p style="color:#909399">提示：在左侧菜单选择对应模块进行内容维护，保存后回到<a href="/" target="_blank" style="color:var(--blue)">官网首页</a>刷新即可看到最新效果。</p>
+</div>
+
+<script src="/admin/js/admin-common.js"></script>
+<script src="/admin/js/charts.js"></script>
+<script>
+  Admin.guard();
+  var u = Admin.user();
+  var who = (u && (u.nickname || u.username)) ? (u.nickname || u.username) : '管理员';
+  document.getElementById('hi').textContent = '你好，' + who + ' 👋';
+  Admin.siteName().then(function (name) {
+    document.getElementById('siteName').textContent = name;
+  });
+
+  var defs = [
+    { key: 'bannerCount', label: '轮播图', color: '#409eff', icon: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 15 5-4 4 3 3-2 6 4"/>' },
+    { key: 'advantageCount', label: '核心优势', color: '#9b59f6', icon: '<path d="m12 3 2.5 5.3 5.5.8-4 4 1 5.6-5-2.8-5 2.8 1-5.6-4-4 5.5-.8z"/>' },
+    { key: 'caseCount', label: '成功案例', color: '#67c23a', icon: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>' },
+    { key: 'newsCount', label: '新闻资讯', color: '#e6a23c', icon: '<path d="M4 4h13v16H5a1 1 0 0 1-1-1z"/><path d="M8 8h6M8 12h6M8 16h4"/>' },
+    { key: 'serviceCount', label: 'IT服务', color: '#36cfc9', icon: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/>' }
+  ];
+
+  Admin.get('/api/admin/stats').then(function (s) {
+    // 顶部统计卡片
+    document.getElementById('statGrid').innerHTML = defs.map(function (d) {
+      return '<div class="stat-card"><div class="ic" style="background:' + d.color + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + d.icon + '</svg></div>' +
+        '<div><div class="num">' + (s[d.key] != null ? s[d.key] : 0) + '</div><div class="lbl">' + d.label + '</div></div></div>';
+    }).join('');
+
+    // 柱状图：各模块内容数量
+    Charts.bar(document.getElementById('barChart'), {
+      items: defs.map(function (d) { return { label: d.label, value: s[d.key] || 0, color: d.color }; })
+    });
+
+    // 折线图：近 6 个月新闻 / 案例发布趋势
+    var tr = s.trend || {};
+    Charts.line(document.getElementById('lineChart'), {
+      categories: tr.months || [],
+      series: [
+        { name: '新闻', color: '#409eff', values: tr.news || [] },
+        { name: '案例', color: '#67c23a', values: tr.cases || [] }
+      ]
+    });
+
+    // 饼图：新闻浏览量 Top5 + 其他
+    var nv = s.newsViews || [];
+    var pieItems = nv.slice(0, 5).map(function (d) { return { label: d.title, value: d.views }; });
+    var rest = nv.slice(5).reduce(function (a, d) { return a + (d.views || 0); }, 0);
+    if (rest > 0) pieItems.push({ label: '其他', value: rest });
+    Charts.pie(document.getElementById('pieChart'), { items: pieItems });
+  }).catch(function (e) { Admin.toast(e.message, 'error'); });
+</script>
+</body>
+</html>

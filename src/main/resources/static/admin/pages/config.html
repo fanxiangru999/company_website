@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网站设置</title>
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+<div class="card" style="margin-bottom:16px">
+  <div class="toolbar" style="margin-bottom:0">
+    <div class="left"><span class="page-title">网站设置</span><span class="page-desc" style="display:inline;margin-left:8px">统一维护官网文字、文案与联系方式</span></div>
+    <div class="right"><button class="btn btn--primary" id="saveBtn">保存设置</button></div>
+  </div>
+</div>
+<div id="content"><div class="card"><div class="empty">加载中…</div></div></div>
+
+<script src="/admin/js/admin-common.js"></script>
+<script>
+  Admin.guard();
+
+  function fieldHtml(c) {
+    var label = Admin.esc(c.remark || c.configKey);
+    if (/_image$/.test(c.configKey)) {
+      return '<div class="form-item"><label>' + label + '</label><div class="uploader">' +
+        '<div class="preview"><img ' + (c.configValue ? 'src="' + Admin.esc(c.configValue) + '"' : 'style="display:none"') + '></div>' +
+        '<div><input type="file" accept="image/*" data-upload><div class="tip">' + Admin.esc(c.configKey) + '</div></div></div>' +
+        '<input type="hidden" data-url class="cfg-field" data-id="' + c.id + '" value="' + Admin.esc(c.configValue || '') + '"></div>';
+    }
+    if (c.configKey === 'info_content' || c.configKey === 'expert_content') {
+      return '<div class="form-item"><label>' + label + '</label><textarea class="textarea cfg-field" data-id="' + c.id + '" style="min-height:120px">' + Admin.esc(c.configValue || '') + '</textarea><div class="tip">每一行将显示为前台的一个段落</div></div>';
+    }
+    if (c.configKey === 'advantage_section_subtitle') {
+      return '<div class="form-item"><label>' + label + '</label><textarea class="textarea cfg-field" data-id="' + c.id + '">' + Admin.esc(c.configValue || '') + '</textarea></div>';
+    }
+    return '<div class="form-item"><label>' + label + '</label><input class="input cfg-field" data-id="' + c.id + '" value="' + Admin.esc(c.configValue || '') + '"></div>';
+  }
+
+  function load() {
+    Admin.get('/api/admin/config/list').then(function (list) {
+      var groups = {}, order = [];
+      list.forEach(function (c) {
+        var g = c.configGroup || '其他';
+        if (!groups[g]) { groups[g] = []; order.push(g); }
+        groups[g].push(c);
+      });
+      document.getElementById('content').innerHTML = order.map(function (g) {
+        return '<div class="card" style="margin-bottom:16px"><div class="page-title" style="margin-bottom:18px;font-size:15px">' + Admin.esc(g) + '</div>' +
+          groups[g].map(fieldHtml).join('') + '</div>';
+      }).join('');
+      Admin.bindUploader(document);
+    }).catch(function (e) { Admin.toast(e.message, 'error'); });
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', function () {
+    var payload = [];
+    document.querySelectorAll('.cfg-field').forEach(function (el) { payload.push({ id: +el.dataset.id, configValue: el.value }); });
+    Admin.put('/api/admin/config', payload).then(function () { Admin.toast('保存成功，刷新官网可见', 'success'); })
+      .catch(function (e) { Admin.toast(e.message || '保存失败', 'error'); });
+  });
+
+  load();
+</script>
+</body>
+</html>

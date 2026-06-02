@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新闻详情 - 中赣通</title>
+  <link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+
+<header class="header scrolled" id="header">
+  <div class="container">
+    <a class="logo" href="/">
+      <svg class="mark" viewBox="0 0 40 40" fill="none">
+        <rect x="4" y="10" width="20" height="9" rx="2" fill="#2f7be0"/>
+        <rect x="14" y="21" width="20" height="9" rx="2" fill="#9cc7f2"/>
+      </svg>
+      <span id="logoText">中赣通</span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="/">首页</a>
+      <a href="/#cases">产品与案例</a>
+      <a href="/#expert">服务与支持</a>
+      <a href="/news.html" class="active">新闻资讯</a>
+      <a href="/#info">关于我们</a>
+      <a href="/#footer">联系我们</a>
+    </nav>
+    <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<div class="subpage">
+  <div class="container article">
+    <div class="breadcrumb" style="color:#aab2bd;margin-bottom:24px">
+      <a href="/" style="color:var(--primary)">首页</a> /
+      <a href="/news.html" style="color:var(--primary)">新闻资讯</a> / 详情
+    </div>
+    <div id="articleBox">
+      <p style="color:#aab2bd">加载中…</p>
+    </div>
+    <a class="back-link" href="/news.html">&#8592; 返回新闻列表</a>
+  </div>
+</div>
+
+<footer class="footer" id="footer">
+  <div class="container">
+    <div class="footer__bottom" style="border:none;background:transparent;padding:30px 0 50px">
+      Copyright © 2020 - <span id="footerIcp"></span> <span id="footerCompany">贵州中赣通信息科技有限公司</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  function esc(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fmt(s){ if(!s) return ''; var m=String(s).substring(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m? m[1]+'年'+(+m[2])+'月'+(+m[3])+'日':s; }
+  function set(id,v){ var el=document.getElementById(id); if(el&&v!=null) el.textContent=v; }
+  document.getElementById('navToggle').addEventListener('click', function(){ document.getElementById('nav').classList.toggle('open'); });
+
+  fetch('/api/portal/home').then(function(r){return r.json();}).then(function(res){
+    var c=(res.data&&res.data.config)||{}; set('logoText',c.site_name); set('footerCompany',c.company_full_name); set('footerIcp',c.icp);
+  }).catch(function(){});
+
+  var id = new URLSearchParams(location.search).get('id');
+  var box = document.getElementById('articleBox');
+  if(!id){ box.innerHTML='<p style="color:#aab2bd">缺少新闻 ID</p>'; return; }
+
+  fetch('/api/portal/news/'+encodeURIComponent(id)).then(function(r){return r.json();}).then(function(res){
+    if(res.code!==200||!res.data){ box.innerHTML='<p style="color:#aab2bd">'+esc(res.msg||'新闻不存在')+'</p>'; return; }
+    var n=res.data;
+    document.title = (n.title||'新闻详情') + ' - 中赣通';
+    box.innerHTML = '<h1>'+esc(n.title)+'</h1>'+
+      '<div class="article__meta"><span>发布日期：'+fmt(n.publishDate)+'</span>'+
+      '<span>作者：'+esc(n.author||'管理员')+'</span><span>浏览：'+(n.views||0)+'</span></div>'+
+      '<div class="article__content">'+(n.content||'')+'</div>';
+  }).catch(function(){ box.innerHTML='<p style="color:#aab2bd">加载失败</p>'; });
+})();
+</script>
+</body>
+</html>
