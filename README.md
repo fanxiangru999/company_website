@@ -22,57 +22,7 @@
 
 ---
 
-## 二、数据库初始化
-
-1. 启动 MySQL，使用客户端（Navicat / 命令行均可）执行根目录下的脚本：
-
-   ```
-   sql/company_website.sql
-   ```
-
-   脚本会自动创建数据库 `company_website`、所有表，并写入与设计图一致的初始数据（含默认管理员）。
-
-2. 修改后端数据库连接（如账号密码与默认不同）：
-
-   编辑 `src/main/resources/application.yml`：
-
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:mysql://localhost:3306/company_website?...
-       username: root      # 改成你的
-       password: root      # 改成你的
-   ```
-
----
-
-## 三、运行
-
-在项目根目录（即本 README 所在目录）执行：
-
-```bash
-# 方式一：直接运行
-mvn spring-boot:run
-
-# 方式二：打包后运行
-mvn clean package -DskipTests
-java -jar target/company-website.jar
-```
-
-启动成功后访问：
-
-| 入口 | 地址 |
-| --- | --- |
-| 官网前台 | http://localhost:8080/ |
-| 后台管理 | http://localhost:8080/admin/login.html |
-
-**默认管理员账号：`admin` / `admin123`**
-
-> 上传的图片保存在运行目录下的 `uploads/` 文件夹，并通过 `/uploads/**` 访问；请保持启动时的工作目录为项目根目录。
-
----
-
-## 四、功能说明
+## 二、功能说明
 
 ### 前台官网（还原设计图）
 - 顶部导航（滚动渐变）、首页轮播 Banner
@@ -97,7 +47,7 @@ java -jar target/company-website.jar
 
 ---
 
-## 五、目录结构
+## 三、目录结构
 
 ```
 公司官网/
@@ -127,7 +77,7 @@ java -jar target/company-website.jar
 
 ---
 
-## 六、主要接口
+## 四、主要接口
 
 | 方法 | 路径 | 说明 | 鉴权 |
 | --- | --- | --- | --- |
@@ -145,7 +95,7 @@ java -jar target/company-website.jar
 
 ---
 
-## 七、说明
+## 五、说明
 - 初始图片为内置 SVG 占位图（蓝色科技风，离线可用），可在后台上传真实图片替换。
 - 若 `sql` 脚本未导入管理员，应用启动时会自动兜底创建 `admin/admin123`。
 - 生产环境请修改 `application.yml` 中的 `jwt.secret` 与数据库密码。
